@@ -1,0 +1,63 @@
+{
+  "name": "n8n-nodes-vertex-ai",
+  "version": "0.1.5",
+  "description": "n8n community node for Google Vertex AI (Gemini)",
+  "keywords": [
+    "n8n-community-node-package",
+    "vertex-ai",
+    "gemini",
+    "google-cloud",
+    "ai"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/user/n8n-nodes-vertex-ai",
+  "author": {
+    "name": "Your Name"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/user/n8n-nodes-vertex-ai.git"
+  },
+  "engines": {
+    "node": ">=18.10",
+    "pnpm": ">=9.1"
+  },
+  "packageManager": "pnpm@9.1.4",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier --write .",
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/VertexAiApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/VertexAI/VertexAI.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.10.1",
+    "@typescript-eslint/parser": "^8.16.0",
+    "eslint": "^8.56.0",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "^1.69.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@google-cloud/vertexai": "^1.10.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "^1.69.0"
+  }
+}
