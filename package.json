@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-vertex-ai",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "n8n community node for Google Vertex AI (Gemini)",
   "keywords": [
     "n8n-community-node-package",
@@ -10,13 +10,13 @@
     "ai"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/user/n8n-nodes-vertex-ai",
+  "homepage": "https://github.com/pokabook/n8n-nodes-vertex-ai",
   "author": {
     "name": "Your Name"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/user/n8n-nodes-vertex-ai.git"
+    "url": "https://github.com/pokabook/n8n-nodes-vertex-ai.git"
   },
   "engines": {
     "node": ">=18.10",
