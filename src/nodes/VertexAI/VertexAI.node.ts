@@ -286,6 +286,13 @@ export class VertexAI implements INodeType {
 						default: 'none',
 						description: 'Controls the amount of internal reasoning for Gemini 3 models. Use "low" or "high" to enable thinking.',
 					},
+					{
+						displayName: 'Timeout (ms)',
+						name: 'timeout',
+						type: 'number',
+						default: 60000,
+						description: 'API 요청 타임아웃 (밀리초). 기본값 60000ms = 60초. 긴 응답이 예상되면 값을 늘려주세요.',
+					},
 				],
 			},
 			// Structured Output Section
@@ -478,6 +485,7 @@ export class VertexAI implements INodeType {
 					topK?: number;
 					systemInstruction?: string;
 					thinkingLevel?: string;
+					timeout?: number;
 				};
 
 				// Preview models (like gemini-3-pro-preview) require global region
@@ -666,8 +674,17 @@ export class VertexAI implements INodeType {
 					];
 				}
 
-				// Generate content using the SDK
-				const result = await generativeModel.generateContent({ contents });
+				// Generate content using the SDK with timeout
+				const timeoutMs = options.timeout || 60000;
+				const generatePromise = generativeModel.generateContent({ contents });
+
+				const timeoutPromise = new Promise<never>((_, reject) => {
+					setTimeout(() => {
+						reject(new Error(`Request timed out after ${timeoutMs}ms`));
+					}, timeoutMs);
+				});
+
+				const result = await Promise.race([generatePromise, timeoutPromise]);
 				const response = result.response;
 
 				const generatedText =
