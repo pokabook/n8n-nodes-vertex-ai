@@ -1,7 +1,7 @@
 {
-  "name": "n8n-nodes-vertex-ai",
+  "name": "@brunodosanjos/n8n-nodes-vertex-ai-pdf",
   "version": "0.1.8",
-  "description": "n8n community node for Google Vertex AI (Gemini)",
+  "description": "n8n community node for Google Vertex AI (Gemini) - With PDF supports",
   "keywords": [
     "n8n-community-node-package",
     "vertex-ai",
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pokabook/n8n-nodes-vertex-ai.git"
+    "url": "https://github.com/BrunooDosAnjos/n8n-nodes-vertex-ai-pdf"
   },
   "engines": {
     "node": ">=18.10",
