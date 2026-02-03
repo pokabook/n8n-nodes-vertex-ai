@@ -294,6 +294,13 @@ export class VertexAI implements INodeType {
 						default: 60000,
 						description: 'API 요청 타임아웃 (밀리초). 기본값 60000ms = 60초. 긴 응답이 예상되면 값을 늘려주세요.',
 					},
+					{
+						displayName: 'Enable Debug Info',
+						name: 'enableDebug',
+						type: 'boolean',
+						default: false,
+						description: '응답에 요청 시간, 타임스탬프 등 디버그 정보 포함',
+					},
 				],
 			},
 			// Structured Output Section
@@ -456,6 +463,10 @@ export class VertexAI implements INodeType {
 		}
 
 		for (let i = 0; i < items.length; i++) {
+			// Debug: Record start time (outside try block for catch access)
+			const requestStartTime = Date.now();
+			const requestTimestamp = new Date().toISOString();
+
 			try {
 				const operation = this.getNodeParameter('operation', i) as string;
 				const model = this.getNodeParameter('model', i) as string;
@@ -487,6 +498,7 @@ export class VertexAI implements INodeType {
 					systemInstruction?: string;
 					thinkingLevel?: string;
 					timeout?: number;
+					enableDebug?: boolean;
 				};
 
 				// Preview models (like gemini-3-pro-preview) require global region
@@ -701,6 +713,9 @@ export class VertexAI implements INodeType {
 					}
 				}
 
+				// Calculate request duration
+				const requestDuration = Date.now() - requestStartTime;
+
 				returnData.push({
 					json: {
 						text: generatedText,
@@ -710,19 +725,50 @@ export class VertexAI implements INodeType {
 						usage: response?.usageMetadata,
 						safetyRatings: response?.candidates?.[0]?.safetyRatings,
 						finishReason: response?.candidates?.[0]?.finishReason,
+						...(options.enableDebug && {
+							_debug: {
+								requestDuration,
+								timestamp: requestTimestamp,
+								model,
+								itemIndex: i,
+							},
+						}),
 					},
 				});
 			} catch (error) {
+				// Calculate duration even for errors
+				const errorDuration = Date.now() - requestStartTime;
+
+				// Classify error type
+				const classifyError = (err: Error): string => {
+					const message = err.message.toLowerCase();
+					if (message.includes('timed out')) return 'TIMEOUT';
+					if (message.includes('429') || message.includes('rate limit') || message.includes('quota') || message.includes('resource exhausted')) return 'RATE_LIMIT';
+					if (message.includes('503') || message.includes('service unavailable')) return 'SERVICE_UNAVAILABLE';
+					return 'UNKNOWN';
+				};
+
+				const errorType = classifyError(error as Error);
+				const enhancedErrorMessage = `Vertex AI Error [${errorType}]: ${(error as Error).message} (Duration: ${errorDuration}ms)`;
+
 				if (this.continueOnFail()) {
 					returnData.push({
-						json: { error: (error as Error).message },
+						json: {
+							error: enhancedErrorMessage,
+							_debug: {
+								errorType,
+								requestDuration: errorDuration,
+								timestamp: requestTimestamp,
+								itemIndex: i,
+							},
+						},
 						pairedItem: { item: i },
 					});
 					continue;
 				}
 				throw new NodeOperationError(
 					this.getNode(),
-					`Vertex AI Error: ${(error as Error).message}`,
+					enhancedErrorMessage,
 					{ itemIndex: i },
 				);
 			}
