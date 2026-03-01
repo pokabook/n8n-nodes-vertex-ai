@@ -166,7 +166,7 @@ export class VertexAI implements INodeType {
 				description: 'The text to send with the image',
 			},
 			{
-				displayName: 'Image Source',
+				displayName: 'File Source',
 				name: 'imageSource',
 				type: 'options',
 				options: [
@@ -181,6 +181,47 @@ export class VertexAI implements INodeType {
 					},
 				},
 			},
+
+			{
+			  displayName: 'URL MIME Type',
+			  name: 'urlMimeType',
+			  type: 'options',
+			  options: [
+			    { name: 'image/jpeg', value: 'image/jpeg' },
+			    { name: 'image/png', value: 'image/png' },
+			    { name: 'application/pdf', value: 'application/pdf' },
+			    { name: 'text/plain', value: 'text/plain' },
+			  ],
+			  default: 'application/pdf',
+			  displayOptions: {
+			    show: {
+			      operation: ['multimodal'],
+			      imageSource: ['url'],
+			    },
+			  },
+			  description: 'MIME type do arquivo apontado pela URL',
+			},
+
+			{
+			  displayName: 'Base64 MIME Type',
+			  name: 'base64MimeType',
+			  type: 'options',
+			  options: [
+			    { name: 'image/jpeg', value: 'image/jpeg' },
+			    { name: 'image/png', value: 'image/png' },
+			    { name: 'application/pdf', value: 'application/pdf' },
+			    { name: 'text/plain', value: 'text/plain' },
+			  ],
+			  default: 'application/pdf',
+			  displayOptions: {
+			    show: {
+			      operation: ['multimodal'],
+			      imageSource: ['base64'],
+			    },
+			  },
+			  description: 'MIME type do conteúdo base64',
+			},
+
 			{
 				displayName: 'Binary Property',
 				name: 'binaryProperty',
@@ -195,7 +236,7 @@ export class VertexAI implements INodeType {
 				description: 'Name of the binary property containing the image',
 			},
 			{
-				displayName: 'Image URL',
+				displayName: 'File URL',
 				name: 'imageUrl',
 				type: 'string',
 				default: '',
@@ -207,7 +248,7 @@ export class VertexAI implements INodeType {
 				},
 			},
 			{
-				displayName: 'Base64 Image',
+				displayName: 'Base64 File',
 				name: 'base64Image',
 				type: 'string',
 				default: '',
@@ -641,37 +682,51 @@ export class VertexAI implements INodeType {
 						parts: [{ text: msg.content }],
 					}));
 				} else {
-					// multimodal
+
 					const text = this.getNodeParameter('text', i, '') as string;
 					const imageSource = this.getNodeParameter('imageSource', i) as string;
 
-					let imagePart: Part;
+					let filePart: Part;
 
 					if (imageSource === 'binary') {
 						const binaryProperty = this.getNodeParameter('binaryProperty', i) as string;
 						const binaryData = this.helpers.assertBinaryData(i, binaryProperty);
 						const buffer = await this.helpers.getBinaryDataBuffer(i, binaryProperty);
-						imagePart = {
+
+						filePart = {
 							inlineData: {
-								mimeType: binaryData.mimeType || 'image/png',
+								mimeType: binaryData.mimeType || 'application/octet-stream',
 								data: buffer.toString('base64'),
 							},
 						};
+
 					} else if (imageSource === 'url') {
-						const imageUrl = this.getNodeParameter('imageUrl', i) as string;
-						// For URL, we can use fileData part
-						imagePart = {
+						const fileUrl = this.getNodeParameter('imageUrl', i) as string;
+						const urlMimeType = this.getNodeParameter(
+							'urlMimeType',
+							i,
+							'application/pdf',
+						) as string;
+
+						filePart = {
 							fileData: {
-								fileUri: imageUrl,
-								mimeType: 'image/jpeg',
+								fileUri: fileUrl,
+								mimeType: urlMimeType,
 							},
 						};
+
 					} else {
 						const base64 = this.getNodeParameter('base64Image', i) as string;
-						imagePart = {
+						const base64MimeType = this.getNodeParameter(
+							'base64MimeType',
+							i,
+							'application/pdf',
+						) as string;
+
+						filePart = {
 							inlineData: {
-								mimeType: 'image/png',
-								data: base64.replace(/^data:image\/\w+;base64,/, ''),
+								mimeType: base64MimeType,
+								data: base64.replace(/^data:.*;base64,/, ''),
 							},
 						};
 					}
@@ -680,8 +735,8 @@ export class VertexAI implements INodeType {
 						{
 							role: 'user',
 							parts: [
-								{ text: text || 'Describe this image' },
-								imagePart,
+								{ text: text || 'Describe this file' },
+								filePart,
 							],
 						},
 					];
