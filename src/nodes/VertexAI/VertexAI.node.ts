@@ -76,17 +76,20 @@ export class VertexAI implements INodeType {
 				name: 'model',
 				type: 'options',
 				options: [
+					{ name: 'Gemini 3.8 Flash', value: 'gemini-3.8-flash' },
+					{ name: 'Gemini 3.7 Flash', value: 'gemini-3.7-flash' },
+					{ name: 'Gemini 3.6 Flash', value: 'gemini-3.6-flash' },
+					{ name: 'Gemini 3.5 Flash', value: 'gemini-3.5-flash' },
+					{ name: 'Gemini 3.5 Flash Lite', value: 'gemini-3.5-flash-lite' },
+					{ name: 'Gemini 3.1 Pro (Preview)', value: 'gemini-3.1-pro-preview' },
+					{ name: 'Gemini 3.1 Flash Lite', value: 'gemini-3.1-flash-lite' },
 					{ name: 'Gemini 3 Pro (Preview)', value: 'gemini-3-pro-preview' },
-          { name: 'Gemini 3 Flash (Preview)', value: 'gemini-3-flash-preview' },
+					{ name: 'Gemini 3 Flash (Preview)', value: 'gemini-3-flash-preview' },
 					{ name: 'Gemini 2.5 Pro', value: 'gemini-2.5-pro' },
 					{ name: 'Gemini 2.5 Flash', value: 'gemini-2.5-flash' },
 					{ name: 'Gemini 2.5 Flash Lite', value: 'gemini-2.5-flash-lite' },
-					{ name: 'Gemini 2.0 Flash', value: 'gemini-2.0-flash-001' },
-					{ name: 'Gemini 2.0 Flash Lite', value: 'gemini-2.0-flash-lite-001' },
-					{ name: 'Gemini 1.5 Pro', value: 'gemini-1.5-pro-002' },
-					{ name: 'Gemini 1.5 Flash', value: 'gemini-1.5-flash-002' },
 				],
-				default: 'gemini-2.5-flash',
+				default: 'gemini-3.5-flash',
 				description: 'The Gemini model to use',
 			},
 			// Generate Text
@@ -501,16 +504,17 @@ export class VertexAI implements INodeType {
 					enableDebug?: boolean;
 				};
 
-				// Preview models (like gemini-3-pro-preview) require global region
+				// Gemini 3 family and preview models are served on the global endpoint
 				const isPreviewModel = model.includes('preview');
 				const isGemini3 = model.includes('gemini-3');
-				const location = isPreviewModel ? 'global' : region;
+				const useGlobalEndpoint = isPreviewModel || isGemini3;
+				const location = useGlobalEndpoint ? 'global' : region;
 
 				// Initialize Vertex AI client with appropriate location and endpoint
 				const vertexAI = new VertexAIClient({
 					project: projectId,
 					location,
-					apiEndpoint: isPreviewModel ? 'aiplatform.googleapis.com' : undefined,
+					apiEndpoint: useGlobalEndpoint ? 'aiplatform.googleapis.com' : undefined,
 					googleAuthOptions: {
 						credentials: serviceAccountKey,
 					},

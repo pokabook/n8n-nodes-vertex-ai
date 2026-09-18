@@ -16,20 +16,26 @@ This node allows you to use Google's powerful Gemini AI models directly in your 
 - **Chat**: Have multi-turn conversations with context
 - **Multimodal**: Process images along with text (vision capabilities)
 - **Structured Output**: Get responses in JSON or Enum format with schema validation
-- **Latest Models**: Support for Gemini 3, 2.5, 2.0, and 1.5 series
+- **Latest Models**: Support for the Gemini 3.x and 2.5 series
 
 ### Supported Models
 
 | Model | Description |
 |-------|-------------|
-| Gemini 3 Pro (Preview) | Latest and most capable model with thinking capabilities |
-| Gemini 2.5 Pro | High capability model for complex tasks |
-| Gemini 2.5 Flash | Fast and efficient for most use cases (Recommended) |
-| Gemini 2.5 Flash Lite | Lightweight version for simple tasks |
-| Gemini 2.0 Flash | Previous generation fast model |
-| Gemini 2.0 Flash Lite | Previous generation lightweight model |
-| Gemini 1.5 Pro | Stable production model |
-| Gemini 1.5 Flash | Stable fast model |
+| Gemini 3.8 Flash | Latest Flash model, strongest reasoning and agentic performance |
+| Gemini 3.7 Flash | Previous Flash release |
+| Gemini 3.6 Flash | Previous Flash release |
+| Gemini 3.5 Flash | Balanced speed and quality for most use cases (Recommended, default) |
+| Gemini 3.5 Flash Lite | Lightweight version for simple, high volume tasks |
+| Gemini 3.1 Pro (Preview) | Most capable reasoning model, 1M token context |
+| Gemini 3.1 Flash Lite | Previous lightweight release |
+| Gemini 3 Pro (Preview) | First Gemini 3 Pro preview, kept for existing workflows |
+| Gemini 3 Flash (Preview) | First Gemini 3 Flash preview, kept for existing workflows |
+| Gemini 2.5 Pro | Previous generation high capability model |
+| Gemini 2.5 Flash | Previous generation fast model |
+| Gemini 2.5 Flash Lite | Previous generation lightweight model |
+
+> Gemini 1.5 and 2.0 models were removed in v0.2.0 because they have been retired on Vertex AI. Workflows still pinned to them must pick a current model.
 
 ## Installation
 
@@ -95,7 +101,7 @@ npm install n8n-nodes-vertex-ai
 
 1. Add a **Vertex AI** node to your workflow
 2. Select **Generate Text** operation
-3. Choose a model (e.g., Gemini 2.5 Flash)
+3. Choose a model (e.g., Gemini 3.5 Flash)
 4. Enter your prompt:
    ```
    Write a short poem about automation
@@ -250,7 +256,7 @@ For complex structures like nested objects or arrays of objects, use **Advanced 
 | Top P | Nucleus sampling threshold |
 | Top K | Top-k sampling threshold |
 | System Instruction | Instructions that guide the AI's behavior |
-| Thinking Level | For Gemini 3 only - enables reasoning (None/Low/High) |
+| Thinking Level | For Gemini 3.x only - enables reasoning (None/Low/High) |
 | Response Format | Output format (Plain Text/JSON/Enum) |
 
 ## Troubleshooting
@@ -266,7 +272,7 @@ For complex structures like nested objects or arrays of objects, use **Advanced 
 ### Model not available in region
 - Some models (especially preview models) are only available in specific regions
 - Try using `us-central1` region for the widest model availability
-- Gemini 3 Preview models automatically use the global endpoint
+- Gemini 3 family and preview models automatically use the global endpoint
 
 ## License
 
@@ -286,20 +292,26 @@ n8n에서 Google Vertex AI (Gemini 모델)를 사용할 수 있게 해주는 커
 - **채팅**: 맥락을 유지하는 다중 턴 대화
 - **멀티모달**: 이미지와 텍스트를 함께 처리 (비전 기능)
 - **구조화된 출력**: JSON 또는 Enum 형식으로 스키마 검증된 응답 받기
-- **최신 모델**: Gemini 3, 2.5, 2.0, 1.5 시리즈 지원
+- **최신 모델**: Gemini 3.x, 2.5 시리즈 지원
 
 ### 지원 모델
 
 | 모델 | 설명 |
 |------|------|
-| Gemini 3 Pro (Preview) | 사고 기능이 있는 최신 고성능 모델 |
-| Gemini 2.5 Pro | 복잡한 작업을 위한 고성능 모델 |
-| Gemini 2.5 Flash | 대부분의 용도에 적합한 빠르고 효율적인 모델 (권장) |
-| Gemini 2.5 Flash Lite | 간단한 작업을 위한 경량 버전 |
-| Gemini 2.0 Flash | 이전 세대 빠른 모델 |
-| Gemini 2.0 Flash Lite | 이전 세대 경량 모델 |
-| Gemini 1.5 Pro | 안정적인 프로덕션 모델 |
-| Gemini 1.5 Flash | 안정적인 빠른 모델 |
+| Gemini 3.8 Flash | 최신 Flash 모델, 추론·에이전트 성능 최상 |
+| Gemini 3.7 Flash | 이전 Flash 릴리스 |
+| Gemini 3.6 Flash | 이전 Flash 릴리스 |
+| Gemini 3.5 Flash | 속도와 품질의 균형, 대부분의 용도에 적합 (권장, 기본값) |
+| Gemini 3.5 Flash Lite | 단순·대량 작업을 위한 경량 모델 |
+| Gemini 3.1 Pro (Preview) | 가장 강력한 추론 모델, 1M 토큰 컨텍스트 |
+| Gemini 3.1 Flash Lite | 이전 경량 릴리스 |
+| Gemini 3 Pro (Preview) | 초기 Gemini 3 Pro 프리뷰, 기존 워크플로우 호환용 |
+| Gemini 3 Flash (Preview) | 초기 Gemini 3 Flash 프리뷰, 기존 워크플로우 호환용 |
+| Gemini 2.5 Pro | 이전 세대 고성능 모델 |
+| Gemini 2.5 Flash | 이전 세대 빠른 모델 |
+| Gemini 2.5 Flash Lite | 이전 세대 경량 모델 |
+
+> Gemini 1.5 / 2.0 모델은 Vertex AI에서 지원 종료되어 v0.2.0에서 제거했습니다. 해당 모델을 쓰던 워크플로우는 현재 모델로 다시 선택해야 합니다.
 
 ## 설치 방법
 
@@ -365,7 +377,7 @@ npm install n8n-nodes-vertex-ai
 
 1. 워크플로우에 **Vertex AI** 노드 추가
 2. **Generate Text** 작업 선택
-3. 모델 선택 (예: Gemini 2.5 Flash)
+3. 모델 선택 (예: Gemini 3.5 Flash)
 4. 프롬프트 입력:
    ```
    자동화에 대한 짧은 시를 써줘
@@ -520,7 +532,7 @@ Enum Values: 버그, 기능요청, 질문, 기타
 | Top P | 핵 샘플링 임계값 |
 | Top K | Top-k 샘플링 임계값 |
 | System Instruction | AI의 동작을 안내하는 지침 |
-| Thinking Level | Gemini 3 전용 - 추론 활성화 (None/Low/High) |
+| Thinking Level | Gemini 3.x 전용 - 추론 활성화 (None/Low/High) |
 | Response Format | 출력 형식 (Plain Text/JSON/Enum) |
 
 ## 문제 해결
@@ -536,7 +548,7 @@ Enum Values: 버그, 기능요청, 질문, 기타
 ### 리전에서 모델 사용 불가
 - 일부 모델(특히 프리뷰 모델)은 특정 리전에서만 사용 가능
 - 가장 넓은 모델 지원을 위해 `us-central1` 리전 사용 권장
-- Gemini 3 Preview 모델은 자동으로 글로벌 엔드포인트 사용
+- Gemini 3 계열 및 프리뷰 모델은 자동으로 글로벌 엔드포인트 사용
 
 ## 라이선스
 
